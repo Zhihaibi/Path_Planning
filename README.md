@@ -1,4 +1,4 @@
-## Overview
+# Overview
 
 This repository implements some common path planning algorithms used in robotics. It will be continuously updated.
 
@@ -10,7 +10,7 @@ This repository implements some common path planning algorithms used in robotics
 
 
 
-#### Dependencies
+## Dependencies
 
 - Eigen
 - matplotlib in c++
