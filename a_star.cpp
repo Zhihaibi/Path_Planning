@@ -1,3 +1,9 @@
+//###################################################
+//                   A* ALGORITHM
+//  AUTHOR:   Zhihai Bi
+//  WRITTEN:  2022-02-28
+//###################################################
+
 #include "a_star.h"
 using namespace std;
 namespace plt = matplotlibcpp;

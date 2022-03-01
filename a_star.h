@@ -53,5 +53,4 @@ class AstarPathFinder{
         std::tuple<std::vector<double>, std::vector<double>> GetPath();
         std::vector<Eigen::Vector2d> GetVisitedNodes();
 };
-
 #endif //A_STAR_H
