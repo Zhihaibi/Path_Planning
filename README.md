@@ -8,7 +8,7 @@ This repository implements some common path planning algorithms used in robotics
 
 ### 1.1 BFS
 
-![BFS_Dijkstra](images\BFS_Dijkstra.gif)
+![BFS_Dijkstra](images/BFS_Dijkstra.gif)
 
 
 
@@ -22,7 +22,7 @@ In this scene, the cost of the edge is same. So the method of Dijkstra is equal 
 
 ### 1.4 A*
 
-![A_star](images\A_star.gif)
+![A_star](images/A_star.gif)
 
 ### 1.5 D*
 
