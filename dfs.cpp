@@ -1,8 +1,8 @@
-#include "a_star.h"
+#include "dfs.h"
 using namespace std;
 namespace plt = matplotlibcpp;
 
-void AstarPathFinder::InitMap(){
+void DfsPathFinder::InitMap(){
     // Initial the boundary and obstacle
     for(int i = 0; i < 60; i++){
         ox_.push_back(i);
@@ -55,47 +55,41 @@ void AstarPathFinder::InitMap(){
 }
 
 
-int AstarPathFinder::Coor2GridIndex(Eigen::Vector2d pt){
+int DfsPathFinder::Coor2GridIndex(Eigen::Vector2d pt){
     return (pt(1) - min_y_) * x_width_ + pt(0) - min_x_;
 }
 
 
-Eigen::Vector2d AstarPathFinder::GridIndex2Coor(int index){
+Eigen::Vector2d DfsPathFinder::GridIndex2Coor(int index){
     Eigen::Vector2d pt;
     pt(1) =  int((index-min_x_)/x_width_) + min_y_;
     pt(0) = index - (pt(1)-min_y_)*x_width_ + min_x_;
     return pt;
 }
 
-
-double AstarPathFinder::GetHue(GridNodePtr node1, GridNodePtr node2){
-    return (node1->coord - node2->coord).norm();  // Euclidean
-}
-
-
-void AstarPathFinder::GetMotion(){
+void DfsPathFinder::GetMotion(){
     std::vector<std::vector<double>> motion = {{-1,0}, {-1,1}, {0,1}, {1,1},
                                                {1,0},  {1,-1}, {0,-1}, {-1,-1}};
     motion_ = motion;
 }
 
 
-bool AstarPathFinder::IsObstacle(Eigen::Vector2d & pt) {
+bool DfsPathFinder::IsObstacle(Eigen::Vector2d & pt) {
     if(pt(0) <= min_x_ || pt(0) >= max_x_ || pt(1) <= min_y_ || pt(1) >= max_y_)
         return true;
     return obs_map_[std::make_pair(pt(0),pt(1))];
 }
 
 
-void AstarPathFinder::Planning(Eigen::Vector2d start_pt, Eigen::Vector2d end_pt){
+void DfsPathFinder::Planning(Eigen::Vector2d start_pt, Eigen::Vector2d end_pt){
     // for plotting only
     start_end_x.push_back(start_pt(0));
     start_end_x.push_back(end_pt(0));
     start_end_y.push_back(start_pt(1));
     start_end_y.push_back(end_pt(1));
 
-    // a star start
-    std::cout << "A star search begin!" << std::endl;
+    // bfs start
+    std::cout << "Depth-First Searching begin!" << std::endl;
     int start_idx = Coor2GridIndex(start_pt);
     int end_idx = Coor2GridIndex(end_pt);
     goal_idx_ = end_idx;
@@ -103,27 +97,25 @@ void AstarPathFinder::Planning(Eigen::Vector2d start_pt, Eigen::Vector2d end_pt)
     GridNodePtr node_start_ptr = new GridNode(start_idx, start_pt);
     GridNodePtr node_end_ptr = new GridNode(end_idx, end_pt);
 
-    node_start_ptr->g_score = 0;
-    node_start_ptr->f_score = GetHue(node_start_ptr, node_end_ptr);
 
     open_set_.clear();
     open_set_[start_idx] = node_start_ptr;  // put the start node in the open set
 
-    std::multimap<double,int> q_priority;
-    q_priority.insert(std::make_pair(node_start_ptr->f_score, node_start_ptr->index));
+    std::stack<int> q_normal;
+    q_normal.push(node_start_ptr->index);
     GetMotion();
 
     while(!open_set_.empty()){
-        int best_index = q_priority.begin()->second;
-        q_priority.erase(q_priority.begin());
-        GridNodePtr node_current_ptr = open_set_[best_index];
-        open_set_.erase(best_index);
-        close_set_.push_back(best_index);
+        int next_index = q_normal.top();
+        q_normal.pop();
+        GridNodePtr node_current_ptr = open_set_[next_index];
+        open_set_.erase(next_index);
+        close_set_.push_back(next_index);
 
         // check if the current node is the goal
         if(node_current_ptr->index == goal_idx_){
             terminate_ptr_ = node_current_ptr;
-            std::cout << "A star search finish!" << std::endl;
+            std::cout << "Depth-First Searching finish!" << std::endl;
             return;
         }
 
@@ -142,23 +134,11 @@ void AstarPathFinder::Planning(Eigen::Vector2d start_pt, Eigen::Vector2d end_pt)
             vector<int>::iterator iter = find(close_set_.begin(), close_set_.end(), iFind);
 
             if(iter == close_set_.end()){  // check if not in the close set
-
-                GridNodePtr node_new_ptr = new GridNode(new_index, new_coord);
-                node_new_ptr->g_score = node_current_ptr->g_score + hypot(motion_[i][0], motion_[i][1]);
-                node_new_ptr->f_score = GetHue(node_new_ptr, node_end_ptr) + node_new_ptr->g_score;
-
-                if(open_set_.find(new_index) != open_set_.end()){  // check if in the open set
-                    if(open_set_[new_index]->g_score > node_new_ptr->g_score){  // if the node in the open set
-                        open_set_[new_index]->g_score = node_new_ptr->g_score;
-                        open_set_[new_index]->parent = node_current_ptr;
-                        open_set_[new_index]->f_score = node_new_ptr->f_score;
-                        delete node_new_ptr;
-                    }
-                }
-                else{ // not in the open set
+                if(open_set_.find(new_index) == open_set_.end()){  // check if not in the open set
+                    GridNodePtr node_new_ptr = new GridNode(new_index, new_coord);
                     node_new_ptr->parent = node_current_ptr;
                     open_set_[new_index] = node_new_ptr;
-                    q_priority.insert(std::make_pair(node_new_ptr->f_score, node_new_ptr->index));
+                    q_normal.push( node_new_ptr->index);
                 }
             }
         }
@@ -166,7 +146,7 @@ void AstarPathFinder::Planning(Eigen::Vector2d start_pt, Eigen::Vector2d end_pt)
 }
 
 
-std::tuple<vector<double>, vector<double>> AstarPathFinder::GetPath(){
+std::tuple<vector<double>, vector<double>> DfsPathFinder::GetPath(){
     GridNodePtr temp_ptr = terminate_ptr_;
     std::vector<double> pathx;
     std::vector<double> pathy;
@@ -184,7 +164,7 @@ std::tuple<vector<double>, vector<double>> AstarPathFinder::GetPath(){
 }
 
 
-void AstarPathFinder::PlotPath(vector<double> pathx, vector<double> pathy){
+void DfsPathFinder::PlotPath(vector<double> pathx, vector<double> pathy){
 
     std::vector<double> visited_x;
     std::vector<double> visited_y;
@@ -201,7 +181,7 @@ void AstarPathFinder::PlotPath(vector<double> pathx, vector<double> pathy){
             plt::plot(ox_, oy_, "sk");
             plt::plot(visited_x, visited_y, "sy");  // plot visited nodes
             plt::axis("equal");
-            plt::title("A star Searching");
+            plt::title("Depth-First Searching");
             plt::pause(0.01);
         }
     }

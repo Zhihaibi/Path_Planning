@@ -1,10 +1,7 @@
-//###################################################
-//                   Planning ALGORITHM
-//  AUTHOR:   Zhihai Bi
-//  WRITTEN:  2022-02-28
-//###################################################
-
 #include "a_star.h"
+#include "bfs.h"
+#include "dfs.h"
+
 using namespace std;
 
 int main() {
@@ -13,19 +10,19 @@ int main() {
     Eigen::Vector2d end_pt = {55,55};
 
     clock_t start, end;
-    AstarPathFinder astar;
-    astar.InitMap();
+    BfsPathFinder hn;    // TODO: 1) modified here if you want to change the algorithm
+    hn.InitMap();
 
     start = clock();
-    astar.AstarPlanning(start_pt, end_pt); // A star
+    hn.Planning(start_pt, end_pt);
     end = clock();
 
-    cout << "A star running time:" << double(end-start)/CLOCKS_PER_SEC << "s"<< endl;
+    cout << "Running time:" << double(end-start)/CLOCKS_PER_SEC << "s"<< endl;
 
     std::vector<double> pathx;
     std::vector<double> pathy;
-    tie(pathx,pathy) = astar.GetPath();
-    astar.PlotPath(pathx, pathy);
+    tie(pathx,pathy) = hn.GetPath();
+    hn.PlotPath(pathx, pathy);
 
     return 0;
 }

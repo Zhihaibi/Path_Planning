@@ -1,4 +1,0 @@
-ToolSet: 5.4 (local)@E:\STM32Cube\MinGW
-Options: 
-
-Options:

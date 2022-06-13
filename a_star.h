@@ -33,7 +33,7 @@ class AstarPathFinder{
         std::vector<std::vector<double>> motion_;
 
         std::map<double, GridNodePtr> open_set_;
-        std::map<double, GridNodePtr> close_set_;
+        std::vector<int> close_set_;
 
         GridNodePtr terminate_ptr_;
 
@@ -42,8 +42,11 @@ class AstarPathFinder{
         ~AstarPathFinder() = default;
 
         void InitMap();
-        void AstarPlanning(Eigen::Vector2d start_pt, Eigen::Vector2d end_pt);
+        void Planning(Eigen::Vector2d start_pt, Eigen::Vector2d end_pt);
         int Coor2GridIndex(Eigen::Vector2d pt);
+
+        Eigen::Vector2d GridIndex2Coor(int index);
+
         double GetHue(GridNodePtr node1, GridNodePtr node2);
         void GetMotion();
 
@@ -51,6 +54,6 @@ class AstarPathFinder{
         void PlotPath(std::vector<double> pathx, std::vector<double> pathy);
 
         std::tuple<std::vector<double>, std::vector<double>> GetPath();
-        std::vector<Eigen::Vector2d> GetVisitedNodes();
 };
+
 #endif //A_STAR_H

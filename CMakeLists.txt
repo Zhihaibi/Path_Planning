@@ -19,7 +19,7 @@ set(CMAKE_CXX_STANDARD 14)
 #set(Headers a_star.h)
 #add_executable(Planning ${Sources} ${Headers})
 
-add_executable(Planning main.cpp a_star.cpp a_star.h)
+add_executable(Planning main.cpp a_star.cpp a_star.h bfs.cpp bfs.h dfs.cpp dfs.h)
 
 target_include_directories(${PROJECT_NAME} PRIVATE "/usr/include/python3.8")
 target_link_libraries(${PROJECT_NAME} python3.8)
