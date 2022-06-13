@@ -28,9 +28,13 @@ In this scene, the cost of the edge is same. So the method of Dijkstra is equal 
 
 
 
+
+
 ## 2. Papers
 
 * [A*: ](https://ieeexplore.ieee.org/document/4082128) A Formal Basis for the heuristic Determination of Minimum Cost Paths
+
+
 
 
 
@@ -38,6 +42,8 @@ In this scene, the cost of the edge is same. So the method of Dijkstra is equal 
 
 - Eigen
 - [matplotlib in c++](https://github.com/lava/matplotlib-cpp)
+
+
 
 
 
